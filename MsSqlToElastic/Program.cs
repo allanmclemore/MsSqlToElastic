@@ -25,11 +25,11 @@ namespace MsSqlToElastic
         {
             if (command.isPaging())
             {
-                execute(command);
+                executeWithPaging(command);
             }
             else
             {
-                executeWithPaging(command);
+                execute(command);
             }
         }
         static void execute(Command command)
