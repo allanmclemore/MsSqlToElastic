@@ -69,8 +69,14 @@ namespace MsSqlToElastic
         }
         static void showHelp()
         {
-            Console.WriteLine("indexSql command usage");
-            Console.WriteLine("indexSql -dbserver [server] -database [database] -sql [sql select statement] -elasticurl [url] -index [index] -pagesize [sql page size]");
+            Console.WriteLine("Syntax:");
+            Console.WriteLine();
+            Console.WriteLine("MsSqlToElastic -dbserver [server] -database [database] -sql [sql select statement] -elasticurl [url] -index [index] -pagesize [sql page size]");
+            Console.WriteLine();
+            Console.WriteLine("Example:");
+            Console.WriteLine();
+            Console.WriteLine("MsSqlToElastic -dbserver localhost -database MyDb -sql \"Select id, firstname, lastname, phone from customers order by id\" -elasticurl \"http://localhost:9200\" -index customers -pagesize 10000");
+            Console.WriteLine();
         }
     }
 }
