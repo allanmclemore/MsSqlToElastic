@@ -15,6 +15,7 @@ namespace MsSqlToElastic
         {
             using (var connection = new SqlConnection(request.connectionString))
             {
+                await connection.OpenAsync().ConfigureAwait(false);
                 return (await connection.QueryAsync<object>(
                                  request.sql.WithPaging(request.page, request.pagesize),null,null,600,null)
                                  .ConfigureAwait(false)).ToList<object>();
@@ -24,6 +25,7 @@ namespace MsSqlToElastic
         {
             using (var connection = new SqlConnection(request.connectionString))
             {
+                await connection.OpenAsync().ConfigureAwait(false);
                 return (await connection.QueryAsync<object>(
                                  request.sql, null, null, 600, null)
                                  .ConfigureAwait(false)).ToList<object>();
@@ -31,9 +33,10 @@ namespace MsSqlToElastic
         }
         public static string WithPaging(this string sql, int page = 0, int pagesize = 1000)
         {
+            var skipRows = page * pagesize;
             var result = new StringBuilder(sql);
             result.Append("\n OFFSET ");
-            result.Append(page.ToString());
+            result.Append(skipRows.ToString());
             result.Append(" ROWS \n FETCH NEXT ");
             result.Append(pagesize.ToString());
             result.Append(" ROWS ONLY;");
@@ -47,6 +50,7 @@ namespace MsSqlToElastic
             get
             {
                 var builder = new SqlConnectionStringBuilder();
+                builder.ConnectTimeout = 30;
                 builder.DataSource = server;
                 builder.InitialCatalog = db;
                 builder.IntegratedSecurity = true;
