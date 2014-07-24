@@ -11,15 +11,26 @@ namespace MsSqlToElastic
         public Command(string[] args)
         {
             _args = args;
-            loadParameters(args);
+            
+            if (isHelp() || isReadme())
+            {
+                return;
+            }
+
+            if(_args.isEmpty() || _args.Length.isOdd())
+            {
+                throw new ArgumentException(Global.INVALID_COMMAND);
+            }
+
+            loadParameters();
         }
         public bool isHelp()
         {
-            return (_args.Length == 2) && (_args[1].ToLower() == "-help");
+            return (_args.Length == 1) && (_args[0].ToLower() == "-help");
         }
-        public bool isPaging()
+        public bool isReadme()
         {
-            return pagesize > 0;
+            return (_args.Length == 1) && (_args[0].ToLower() == "-readme");
         }
         public bool isValid()
         {
@@ -59,6 +70,13 @@ namespace MsSqlToElastic
                 return val(keys.elasticurl);
             }
         }
+        public string id
+        {
+            get
+            {
+                return val(keys.id);
+            }
+        }
         public string index
         {
             get
@@ -70,6 +88,7 @@ namespace MsSqlToElastic
         {
             get
             {
+                const int DEFAULT_SQL_PAGE_SIZE = 1000;
                 int size;
                 if (Int32.TryParse(val(keys.pagesize), out size))
                 {
@@ -77,16 +96,54 @@ namespace MsSqlToElastic
                 }
                 else
                 {
-                    return 0;
+                    return DEFAULT_SQL_PAGE_SIZE;
                 }
             }
         }
+        public bool isRecreateIndex
+        {
+            get
+            {
+                return string.Equals(val(keys.append), "false", StringComparison.OrdinalIgnoreCase);
+            }
+        }
+
         public string sql
         {
             get
             {
                 return val(keys.sql);
             }
+        }
+        public string type
+        {
+            get
+            {
+                const string DEFAULT_TYPE = "object";
+                if(val(keys.type).isNullEmptyOrSpaces())
+                {
+                    return DEFAULT_TYPE;
+                }
+                return val(keys.type);
+            }
+        }
+        public static string syntax()
+        {
+            var result = new StringBuilder();
+            foreach (var key in (keys[])Enum.GetValues(typeof(keys)))
+            {
+
+                result.Append(" -");
+                result.Append(key.ToString());
+                result.Append(" [");
+                if (optional(key))
+                {
+                    result.Append("optional ");
+                }
+                result.Append("value");
+                result.Append("]");
+            }
+            return result.ToString();
         }
         private string formatKey(string key)
         {
@@ -96,24 +153,27 @@ namespace MsSqlToElastic
             }
             else
             {
-                throw new Exception("Invalid command. For commadn usage type: indexSql -help");
+                throw new ArgumentException(Global.INVALID_COMMAND);
             }
 
         }
-        private void loadParameters(string[] args)
+        private void loadParameters()
         {
-            for (int i = 0; i < args.Length; i = i + 2)
+            for (int i = 0; i < _args.Length; i = i + 2)
             {
-                var switchHasValue = args.Length >= i + 1;
+                var switchHasValue = _args.Length >= i + 1;
                 if (switchHasValue)
                 {
-                    parameters.Add(formatKey(args[i]), args[i + 1]);
+                    parameters.Add(formatKey(_args[i]), _args[i + 1]);
                 }
             }
         }
-        private bool optional(keys key)
+        public static bool optional(keys key)
         {
-            return key == keys.pagesize;
+            return (key == keys.append) ||
+                    (key == keys.pagesize) || 
+                    (key == keys.type) ||
+                    (key == keys.id);
         }
         private string val(keys key)
         {
@@ -126,17 +186,21 @@ namespace MsSqlToElastic
                 return string.Empty;
             }
         }
-        enum keys
+        public enum keys
         {
             dbserver,
             database,
             sql,
             elasticurl,
             index,
-            pagesize
+            append,
+            pagesize,
+            type,
+            id
         }
         readonly Dictionary<string, string> parameters = new Dictionary<string, string>();
         readonly string[] _args;
+
     }
 }
 

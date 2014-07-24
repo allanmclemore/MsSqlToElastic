@@ -52,6 +52,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Command.cs" />
+    <Compile Include="Global.cs" />
+    <Compile Include="HelpWriter.cs" />
     <Compile Include="InputReader.cs" />
     <Compile Include="OutputWriter.cs" />
     <Compile Include="Program.cs" />

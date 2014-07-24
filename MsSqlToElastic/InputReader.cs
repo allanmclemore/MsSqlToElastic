@@ -63,6 +63,18 @@ namespace MsSqlToElastic
         public int pagesize { get; set; }
         public string server { get; set; }
         public string sql { get; set; }
+
+        public static ReadRequest create(Command command)
+        {
+            return new ReadRequest()
+            {
+                db = command.database,
+                page = 0,
+                pagesize = command.pagesize,
+                server = command.dbServer,
+                sql = command.sql
+            };
+        }
     }
 }
 
