@@ -1,3 +1,5 @@
+MsSqlToElastic 
+==============
 
 A command-line utility for piping MS SQL data to Elastic Search.
 Saves you from writing custom code for simple data pipelines.
@@ -17,37 +19,37 @@ Example
 -------
 MsSqlToElastic -dbserver localhost -database MyDb -sql "Select id, firstname, lastname, phone from customers order by id" -elasticurl "http://localhost:9200" -index customers -pagesize 10000
 
-Required         Description                                                     
---------         -----------                                                     
--dbserver        MS SQL Server host name or computer name           
+Required                                                              
+--------                                                              
+-dbserver        [MS SQL Server host name or computer name]           
 
--database        MS SQL Server database name
+-database        [MS SQL Server database name]
 
--sql             TSQL SELECT statement
+-sql             [TSQL SELECT statement]
 
--elasticurl      URL (including port number) of elastic search instance
+-elasticurl      [URL (including port number) of elastic search instance]
 
--index           elastic search index name (must be all lowercase)
+-index           [elastic search index name (must be all lowercase)]
 
 Optional
 --------
--append           Elastic search write method (true/false)
-                  true appends to an existing index 
-                  false overrites the index with new data
-                  Default Value: true
+-append          [Elastic search write method (true/false)]
+                 true appends to an existing index 
+                 false overrites the index with new data
+                 Default Value: true
 
--id               field name use for _id in Elastic Search
-                  Default Value: blank
-                  Blank value indicates no id, so Elastic
-                  writes allow duplicate _ids for the same type.
-                  If -id is specified, all Elastic writes will be upserts.
+-id              [field name use for _id in Elastic Search]
+                 Default Value: blank
+                 Blank value indicates no id, so Elastic
+                 writes allow duplicate _ids for the same type.
+                 If -id is specified, all Elastic writes will be upserts.
 
--sqlpagesize      sql server pagesize (positive integer)
-                  Default Value: 1000
+-pagesize        [sql server pagesize (positive integer)]
+                 Default Value: 1000
 
--type             specifies the type name written elastic documents.
-                  Maps to the "_type" field in each elastic document.
-                  Default Value: "object"
+-type            [specifies the type name written elastic documents.]
+                 Maps to the "_type" field in each elastic document.
+                 Default Value: "object"
 
 Help
 ------------
